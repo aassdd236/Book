@@ -33,8 +33,7 @@ public class BookSelect {
 							+ " a.author_name,"
 							+ " a.author_desc"
 							+ " from book b"
-							+ " left outer join author a on b.author_id=a.author_id"
-							+ " order by b.title desc";
+							+ " left outer join author a on b.author_id=a.author_id";
 
 					//바인딩
 					pstmt = conn.prepareStatement(query);
