@@ -1,23 +1,16 @@
-package com.javaex.author;
+package com.javaex.book;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
-public class AuthorSelect2 {
+public class BookInsert {
 
 	public static void main(String[] args) {
-	
-		List<AuthorVo> authorList=new ArrayList<AuthorVo>();
-		
 		// 0. import java.sql.*;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
 
 		try {
 			// 1. JDBC 드라이버 (Oracle) 로딩
@@ -29,38 +22,23 @@ public class AuthorSelect2 {
 
 			// 3. SQL문 준비 / 바인딩 / 실행
 			//SQL
-			String query="select author_id, author_name,"
-					+ " author_desc from author";
+			String query="insert into book "
+					+ "values(null, ?, ?, ?, ?);";
 
 			//바인딩
 			pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, "토지");
+			pstmt.setString(2, "출판사");
+			pstmt.setString(3, "2012-12-12");
+			pstmt.setInt(4,  5);
 
 			//실행
-			rs = pstmt.executeQuery();
-
-			//검색결과에서 데이터 꺼내기
-			while(rs.next()) {
-				int no=rs.getInt("author_id");
-				String name=rs.getString("author_name");
-				String desc=rs.getString("author_desc");
-				
-				// 묶기
-				AuthorVo v01=new AuthorVo(no, name, desc);
-				
-				//리스트에 추가
-				authorList.add(v01);
-			}
+			int count = pstmt.executeUpdate();
 
 			// 4.결과처리
-			System.out.println(authorList);
-			
-			for (int i=0; i<authorList.size(); i++) {
-				int no=authorList.get(i).getAuthorId();
-				String name=authorList.get(i).getAuthorName();
-				String desc=authorList.get(i).getAuthorDesc();
-				System.out.println(no+", "+name+", "+desc);
-			}
-				
+			System.out.println(count + "건 등록 되었습니다.");
+
+
 		} catch (ClassNotFoundException e) {
 			System.out.println("error: 드라이버 로딩 실패 - " + e);
 		} catch (SQLException e) {
@@ -69,10 +47,6 @@ public class AuthorSelect2 {
 
 			// 5. 자원정리
 			try {            
-				if (rs != null) {
-					rs.close();
-				}  
-
 				if (pstmt != null) {
 					pstmt.close();
 				}

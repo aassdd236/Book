@@ -1,4 +1,4 @@
-package com.javaex.author;
+package com.javaex.book;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,12 +8,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuthorSelect2 {
+import com.javaex.author.AuthorVo;
+
+public class BookSelectALL {
 
 	public static void main(String[] args) {
-	
-		List<AuthorVo> authorList=new ArrayList<AuthorVo>();
-		
+		List<BookVo> bookList=new ArrayList<BookVo>();
+
 		// 0. import java.sql.*;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -29,8 +30,17 @@ public class AuthorSelect2 {
 
 			// 3. SQL문 준비 / 바인딩 / 실행
 			//SQL
-			String query="select author_id, author_name,"
-					+ " author_desc from author";
+			String query="select b.book_id,"
+					+ " b.title,"
+					+ " b.pubs,"
+					+ " date_format(b.pub_date, '%Y년 %m월 %d일') pub_date,"
+					+ " b.author_id,"
+					+ " a.author_id,"
+					+ " a.author_name,"
+					+ " a.author_desc"
+					+ " from book b"
+					+ " left outer join author a on b.author_id=a.author_id"
+					+ " order by b.title desc";
 
 			//바인딩
 			pstmt = conn.prepareStatement(query);
@@ -40,27 +50,36 @@ public class AuthorSelect2 {
 
 			//검색결과에서 데이터 꺼내기
 			while(rs.next()) {
-				int no=rs.getInt("author_id");
+				int id=rs.getInt("book_id");
+				String title=rs.getString("title");
+				String pubs=rs.getString("pubs");
+				String date=rs.getString("pub_date");
+				int author=rs.getInt("author_id");
+				int uId=rs.getInt("author_id");
 				String name=rs.getString("author_name");
 				String desc=rs.getString("author_desc");
 				
 				// 묶기
-				AuthorVo v01=new AuthorVo(no, name, desc);
-				
+				BookVo v01=new BookVo(id, title, pubs, date, author, uId, name, desc);
+
 				//리스트에 추가
-				authorList.add(v01);
+				bookList.add(v01);
 			}
 
 			// 4.결과처리
-			System.out.println(authorList);
-			
-			for (int i=0; i<authorList.size(); i++) {
-				int no=authorList.get(i).getAuthorId();
-				String name=authorList.get(i).getAuthorName();
-				String desc=authorList.get(i).getAuthorDesc();
-				System.out.println(no+", "+name+", "+desc);
-			}
+			for (int i=0; i<bookList.size(); i++) {
+				int id=bookList.get(i).getId();
+				String title=bookList.get(i).getTitle();
+				String pubs=bookList.get(i).getPubs();
+				String date=bookList.get(i).getDate();
+				int author=bookList.get(i).getAuthor();
+				int uId=bookList.get(i).getuId();
+				String name=bookList.get(i).getName();;
+				String desc=bookList.get(i).getDesc();;
 				
+				System.out.println(id+", "+title+", "+pubs+", "+date+", "+author+", "+uId+", "+name+", "+desc);
+			}
+
 		} catch (ClassNotFoundException e) {
 			System.out.println("error: 드라이버 로딩 실패 - " + e);
 		} catch (SQLException e) {
